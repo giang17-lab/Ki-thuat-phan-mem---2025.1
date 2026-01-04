@@ -1,0 +1,2 @@
+ALTER USER 'root'@'localhost' IDENTIFIED WITH caching_sha2_password BY '123456';
+FLUSH PRIVILEGES;

@@ -1,0 +1,394 @@
+.container {
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  margin: 20px 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.container h2 {
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 24px;
+}
+
+.topActions {
+  margin-bottom: 20px;
+}
+
+.createBtn {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.createBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+}
+
+.createForm {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 24px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  border: 1px solid #dee2e6;
+}
+
+.createForm h3 {
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 18px;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.formActions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  border-left: 4px solid #dc3545;
+}
+
+.success {
+  background-color: #d4edda;
+  color: #155724;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  border-left: 4px solid #28a745;
+}
+
+.searchBox {
+  margin-bottom: 20px;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.3s;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.usersTable {
+  overflow-x: auto;
+  margin-bottom: 20px;
+}
+
+.usersTable table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.usersTable thead {
+  background-color: #667eea;
+  color: white;
+}
+
+.usersTable th {
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.usersTable td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  font-size: 13px;
+  color: #333;
+}
+
+.usersTable tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.role {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.role.admin {
+  background-color: #ffe5e5;
+  color: #c82333;
+}
+
+.role.user {
+  background-color: #e7f3ff;
+  color: #0056b3;
+}
+
+.role.moderator {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.active {
+  color: #28a745;
+  font-weight: 600;
+}
+
+.inactive {
+  color: #dc3545;
+  font-weight: 600;
+}
+
+.date {
+  font-size: 12px;
+  color: #666;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.editBtn,
+.deleteBtn,
+.saveBtn,
+.cancelBtn {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.editBtn {
+  background-color: #007bff;
+  color: white;
+}
+
+.editBtn:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.editBtn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.deleteBtn {
+  background-color: #dc3545;
+  color: white;
+}
+
+.deleteBtn:hover:not(:disabled) {
+  background-color: #c82333;
+}
+
+.deleteBtn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.saveBtn {
+  background-color: #28a745;
+  color: white;
+  padding: 8px 16px;
+}
+
+.saveBtn:hover {
+  background-color: #218838;
+}
+
+.cancelBtn {
+  background-color: #6c757d;
+  color: white;
+  padding: 8px 16px;
+}
+
+.cancelBtn:hover {
+  background-color: #5a6268;
+}
+
+.editForm {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 6px;
+  border-left: 4px solid #667eea;
+}
+
+.formGroup {
+  margin-bottom: 12px;
+}
+
+.formGroup label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #555;
+  font-size: 12px;
+}
+
+.input {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.select {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.select:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.editActions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.empty {
+  text-align: center;
+  color: #666;
+  padding: 40px;
+  font-style: italic;
+}
+
+.info {
+  display: flex;
+  gap: 20px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  border-left: 4px solid #667eea;
+}
+
+.info p {
+  margin: 0;
+  color: #555;
+  font-size: 14px;
+}
+
+.select {
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 12px;
+  background: white;
+  color: #333;
+}
+
+.select option {
+  color: #333;
+  background: white;
+}
+
+.input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 13px;
+  margin-bottom: 8px;
+  color: #333;
+  background: white;
+}
+
+.info {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 6px;
+  border-left: 4px solid #667eea;
+  display: flex;
+  gap: 30px;
+}
+
+.info p {
+  margin: 5px 0;
+  color: #555;
+}
+
+.info strong {
+  color: #333;
+  font-weight: 600;
+}
+
+@media (max-width: 1024px) {
+  .usersTable {
+    font-size: 12px;
+  }
+
+  .usersTable th,
+  .usersTable td {
+    padding: 8px;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .editBtn,
+  .deleteBtn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .info {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .usersTable {
+    overflow-x: auto;
+  }
+}

@@ -1,0 +1,193 @@
+.container {
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  margin: 20px 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.header h2 {
+  color: #333;
+  font-size: 24px;
+  margin: 0;
+}
+
+.dateFilter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dateFilter label {
+  font-weight: 500;
+  color: #555;
+  white-space: nowrap;
+}
+
+.monthInput {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.monthInput:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.error {
+  background-color: #fee;
+  color: #c33;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  border-left: 4px solid #c33;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.statCard {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  transition: transform 0.2s;
+}
+
+.statCard:hover {
+  transform: translateY(-4px);
+}
+
+.statLabel {
+  font-size: 14px;
+  opacity: 0.9;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+.statValue {
+  font-size: 28px;
+  font-weight: bold;
+  word-break: break-word;
+}
+
+.progressBar {
+  width: 100%;
+  height: 30px;
+  background-color: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 20px;
+}
+
+.progress {
+  height: 100%;
+  background: linear-gradient(90deg, #28a745, #20c997);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  transition: width 0.3s ease;
+}
+.unpaidList {
+  margin-top: 40px;
+  padding: 20px;
+  background-color: #fef5f5;
+  border: 1px solid #ffdddd;
+  border-radius: 8px;
+}
+
+.unpaidList h3 {
+  color: #dc3545;
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 18px;
+}
+
+.unpaidTable {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.unpaidTable thead {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.unpaidTable th {
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.unpaidTable td {
+  padding: 12px;
+  border-bottom: 1px solid #dee2e6;
+  font-size: 14px;
+  color: #555;
+}
+
+.unpaidTable tbody tr:hover {
+  background-color: #f5f5f5;
+}
+
+.unpaidTable tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.feeStats {
+  margin-top: 24px;
+}
+
+.feeTable {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.feeTable thead {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.feeTable th, .feeTable td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+  color: #333;
+}
+
+.feeTable tbody tr:hover {
+  background-color: #f7f9ff;
+}
