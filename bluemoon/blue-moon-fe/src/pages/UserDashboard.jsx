@@ -27,6 +27,9 @@ export function UserDashboard() {
     loai_gop_y: 'gop_y'
   });
   
+  // Thông báo
+  const [notifications, setNotifications] = useState([]);
+  
   // Form thêm xe/nhân khẩu
   const [showAddVehicle, setShowAddVehicle] = useState(false);
   const [showAddResident, setShowAddResident] = useState(false);
@@ -69,6 +72,49 @@ export function UserDashboard() {
       // Load góp ý
       const fbRes = await gopyService.getMyFeedback();
       setMyFeedback(fbRes.data || []);
+      
+      // Load thông báo (giả lập - sẽ tích hợp API sau)
+      const unpaidFees = hoRes.data?.phieuThu?.filter(p => !p.da_thu) || [];
+      const notifs = [
+        {
+          id: 1,
+          type: 'announcement',
+          title: 'Thông báo bảo trì hệ thống điện',
+          message: 'Ban quản lý sẽ tiến hành bảo trì hệ thống điện từ 14h-16h ngày 10/01/2026. Vui lòng chuẩn bị.',
+          date: '2026-01-04',
+          read: false
+        },
+        {
+          id: 2,
+          type: 'announcement',
+          title: 'Họp cư dân quý I/2026',
+          message: 'Kính mời quý cư dân tham dự cuộc họp định kỳ vào 9h ngày 15/01/2026 tại sảnh tầng 1.',
+          date: '2026-01-03',
+          read: false
+        },
+        {
+          id: 3,
+          type: 'announcement',
+          title: 'Quy định mới về đỗ xe',
+          message: 'Từ ngày 01/02/2026, tất cả xe phải có thẻ để vào hầm. Vui lòng đăng ký thẻ tại phòng BQL.',
+          date: '2026-01-02',
+          read: true
+        }
+      ];
+      // Thêm thông báo nhắc nợ nếu có
+      if (unpaidFees.length > 0) {
+        const totalUnpaid = unpaidFees.reduce((sum, p) => sum + (parseFloat(p.so_tien_phai_thu) || 0) - (parseFloat(p.so_tien_da_thu) || 0), 0);
+        notifs.unshift({
+          id: 0,
+          type: 'payment',
+          title: `⚠️ Nhắc nhở thanh toán`,
+          message: `Bạn có ${unpaidFees.length} khoản thu chưa thanh toán với tổng số tiền ${totalUnpaid.toLocaleString('vi-VN')} đ. Vui lòng thanh toán sớm.`,
+          date: new Date().toISOString().split('T')[0],
+          read: false,
+          urgent: true
+        });
+      }
+      setNotifications(notifs);
     } catch (err) {
       console.error('Error loading data:', err);
       // Không hiện lỗi nếu chỉ là chưa có hộ gia đình
@@ -222,7 +268,7 @@ export function UserDashboard() {
       <div className={styles.topBar}>
         <div className={styles.topBarContent}>
           <div className={styles.contactInfo}>
-            <span>📞 Hotline: 1900-xxxx</span>
+            <span>📞 Hotline: 1900 5555</span>
             <span>✉️ support@bluemoon.vn</span>
           </div>
           <div className={styles.userInfo}>
@@ -270,6 +316,12 @@ export function UserDashboard() {
               onClick={() => setActiveTab('feedback')}
             >
               💬 Góp Ý
+            </button>
+            <button 
+              className={activeTab === 'notifications' ? styles.navActive : ''} 
+              onClick={() => setActiveTab('notifications')}
+            >
+              🔔 Thông Báo {notifications.filter(n => !n.read).length > 0 && `(${notifications.filter(n => !n.read).length})`}
             </button>
           </div>
         </div>
@@ -543,8 +595,8 @@ export function UserDashboard() {
                   <ul>
                     <li>Thanh toán trực tiếp tại văn phòng Ban Quản Lý (Tầng 1)</li>
                     <li>Chuyển khoản qua số tài khoản: <strong>0123456789 - Ngân hàng ABC</strong></li>
-                    <li>Nội dung: <strong>{hoGiaDinh?.ma_can_ho || 'Mã căn hộ'} - Họ tên</strong></li>
-                    <li>Liên hệ hotline: <strong>1900-xxxx</strong> nếu cần hỗ trợ</li>
+                    <li>Nội dung: <strong>Mã căn hộ + Tên chủ hộ + Tên khoản thu</strong></li>
+                    <li>Liên hệ hotline: <strong>1900 5555</strong> nếu cần hỗ trợ</li>
                   </ul>
                 </div>
               </div>
@@ -670,6 +722,138 @@ export function UserDashboard() {
                     <p className={styles.noData}>Bạn chưa gửi góp ý nào</p>
                   )}
                 </div>
+              </div>
+            )}
+
+            {/* Tab: Thông Báo */}
+            {activeTab === 'notifications' && (
+              <div className={styles.feedbackTab}>
+                <div style={{ 
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
+                  padding: '25px 30px', 
+                  borderRadius: '12px', 
+                  marginBottom: '25px',
+                  color: 'white'
+                }}>
+                  <h2 style={{ margin: 0, fontSize: '24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    🔔 Thông Báo
+                  </h2>
+                  <p style={{ margin: '8px 0 0', opacity: 0.9 }}>
+                    Thông báo từ Ban quản lý chung cư Blue Moon
+                  </p>
+                </div>
+
+                {notifications.length === 0 ? (
+                  <div style={{ textAlign: 'center', padding: '60px 20px', backgroundColor: '#f8f9fa', borderRadius: '12px' }}>
+                    <div style={{ fontSize: '48px', marginBottom: '15px' }}>📭</div>
+                    <p style={{ color: '#888' }}>Không có thông báo nào</p>
+                  </div>
+                ) : (
+                  <div style={{ display: 'grid', gap: '15px' }}>
+                    {notifications.map((notif) => (
+                      <div 
+                        key={notif.id} 
+                        style={{ 
+                          backgroundColor: 'white',
+                          borderRadius: '12px',
+                          boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
+                          overflow: 'hidden',
+                          border: notif.urgent ? '2px solid #ef4444' : notif.read ? '1px solid #e5e7eb' : '2px solid #667eea',
+                          opacity: notif.read ? 0.8 : 1
+                        }}
+                      >
+                        <div style={{
+                          padding: '15px 20px',
+                          backgroundColor: notif.type === 'payment' ? '#fef2f2' : 
+                                          notif.type === 'announcement' ? '#f0f9ff' : '#f8fafc',
+                          borderBottom: '1px solid #eee',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center'
+                        }}>
+                          <h3 style={{ 
+                            margin: 0, 
+                            fontSize: '16px', 
+                            color: notif.type === 'payment' ? '#dc2626' : '#1e40af',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px'
+                          }}>
+                            {notif.type === 'payment' ? '💰' : '📢'} {notif.title}
+                            {!notif.read && (
+                              <span style={{
+                                backgroundColor: '#ef4444',
+                                color: 'white',
+                                fontSize: '10px',
+                                padding: '2px 6px',
+                                borderRadius: '10px',
+                                fontWeight: '600'
+                              }}>
+                                Mới
+                              </span>
+                            )}
+                          </h3>
+                          <span style={{ fontSize: '13px', color: '#6b7280' }}>
+                            {notif.date}
+                          </span>
+                        </div>
+                        <div style={{ padding: '15px 20px' }}>
+                          <p style={{ 
+                            margin: 0, 
+                            color: '#374151', 
+                            lineHeight: '1.6',
+                            whiteSpace: 'pre-wrap'
+                          }}>
+                            {notif.message}
+                          </p>
+                          {notif.type === 'payment' && (
+                            <button 
+                              onClick={() => setActiveTab('fees')}
+                              style={{
+                                marginTop: '15px',
+                                padding: '10px 20px',
+                                backgroundColor: '#667eea',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '8px',
+                                fontWeight: '600',
+                                cursor: 'pointer'
+                              }}
+                            >
+                              Xem Chi Tiết Khoản Thu →
+                            </button>
+                          )}
+                        </div>
+                        {!notif.read && (
+                          <div style={{ 
+                            padding: '10px 20px', 
+                            backgroundColor: '#f8fafc',
+                            borderTop: '1px solid #eee'
+                          }}>
+                            <button
+                              onClick={() => {
+                                setNotifications(notifications.map(n => 
+                                  n.id === notif.id ? { ...n, read: true } : n
+                                ));
+                              }}
+                              style={{
+                                padding: '6px 14px',
+                                backgroundColor: 'transparent',
+                                color: '#6b7280',
+                                border: '1px solid #d1d5db',
+                                borderRadius: '6px',
+                                fontSize: '13px',
+                                cursor: 'pointer'
+                              }}
+                            >
+                              ✓ Đánh dấu đã đọc
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </>

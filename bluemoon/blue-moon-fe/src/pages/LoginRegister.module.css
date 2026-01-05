@@ -6,9 +6,11 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  /* Use external image URL first, then local fallbacks */
-  background: url('https://cdn.mos.cms.futurecdn.net/DrRN4BTQ9Wk8fHdGjKB2A-970-80.jpg.webp') center/cover no-repeat, url('/login img') center/cover no-repeat, url('/login-image.jpg') center/cover no-repeat, url('/moon-bg.svg') center/cover no-repeat;
-  background-attachment: fixed, fixed, fixed, fixed;
+  background-image: url('/login-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   position: relative;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
