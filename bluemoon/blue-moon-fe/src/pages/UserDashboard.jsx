@@ -30,6 +30,10 @@ export function UserDashboard() {
   // Thông báo
   const [notifications, setNotifications] = useState([]);
   
+  // QR thanh toán
+  const [showQRModal, setShowQRModal] = useState(false);
+  const [qrPaymentData, setQrPaymentData] = useState(null);
+  
   // Form thêm xe/nhân khẩu
   const [showAddVehicle, setShowAddVehicle] = useState(false);
   const [showAddResident, setShowAddResident] = useState(false);
@@ -234,7 +238,10 @@ export function UserDashboard() {
     }
   };
 
-  const getPaymentStatus = (da_thu) => {
+  const getPaymentStatus = (da_thu, trang_thai_text) => {
+    if (trang_thai_text === 'cho_xac_nhan') {
+      return <span className={styles.badgePending}>⏳ Chờ xác nhận</span>;
+    }
     return da_thu ? 
       <span className={styles.badgeApproved}>✅ Đã thanh toán</span> : 
       <span className={styles.badgeRejected}>❌ Chưa thanh toán</span>;
@@ -251,6 +258,54 @@ export function UserDashboard() {
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     return new Date(dateString).toLocaleDateString('vi-VN');
+  };
+
+  // Mở modal QR thanh toán
+  const openQRPayment = (phieuThu) => {
+    // Tạo nội dung QR cho VietQR
+    const bankId = 'TCB'; // Mã ngân hàng Techcombank
+    const accountNo = '19071649369017'; // Số tài khoản
+    const accountName = 'NGUYEN THI HIEN DIEU';
+    const amount = parseFloat(phieuThu.so_tien_phai_thu) || 0;
+    const description = `${phieuThu.ma_thanh_toan} ${hoGiaDinh?.ten_chu_ho || ''}`.trim();
+    
+    // VietQR URL format
+    const qrContent = `https://img.vietqr.io/image/${bankId}-${accountNo}-compact2.png?amount=${amount}&addInfo=${encodeURIComponent(description)}&accountName=${encodeURIComponent(accountName)}`;
+    
+    setQrPaymentData({
+      phieuThu,
+      qrUrl: qrContent,
+      bankInfo: {
+        bank: 'Techcombank - Ngân hàng TMCP Kỹ Thương Việt Nam',
+        accountNo: '19071649369017',
+        accountName: accountName,
+        amount: amount,
+        description: description
+      }
+    });
+    setShowQRModal(true);
+  };
+
+  // Xử lý xác nhận đã thanh toán
+  const handleConfirmPayment = async (phieuThu) => {
+    try {
+      // Gửi yêu cầu xác nhận thanh toán đến server
+      await authService.confirmPayment(phieuThu.id);
+      
+      setSuccess(`Đã gửi xác nhận thanh toán cho "${phieuThu.ten_khoan_thu}". Ban quản lý sẽ kiểm tra và cập nhật.`);
+      setShowQRModal(false);
+      
+      // Reload dữ liệu
+      const hoRes = await authService.getMyHousehold();
+      if (hoRes.data?.data?.phieuThu) {
+        setPhieuThuList(hoRes.data.data.phieuThu);
+      }
+      
+      setTimeout(() => setSuccess(''), 5000);
+    } catch (err) {
+      setError('Có lỗi khi gửi xác nhận. Vui lòng thử lại.');
+      setTimeout(() => setError(''), 3000);
+    }
   };
 
   // Tính tổng tiền chưa thanh toán
@@ -556,28 +611,75 @@ export function UserDashboard() {
                   </div>
                 </div>
 
-                {/* Danh sách hóa đơn */}
+                {/* Hóa đơn chưa thanh toán */}
                 <div className={styles.infoCard}>
-                  <h3>📋 Danh Sách Hóa Đơn</h3>
-                  {phieuThuList.length > 0 ? (
+                  <h3>⚠️ Hóa Đơn Chưa Thanh Toán</h3>
+                  {phieuThuList.filter(p => !p.da_thu).length > 0 ? (
                     <div className={styles.tableWrapper}>
                       <table className={styles.dataTable}>
                         <thead>
                           <tr>
+                            <th>Mã Thanh Toán</th>
                             <th>Khoản Thu</th>
                             <th>Kỳ Thanh Toán</th>
                             <th>Số Tiền</th>
                             <th>Trạng Thái</th>
-                            <th>Ngày Thu</th>
+                            <th>Thanh Toán</th>
                           </tr>
                         </thead>
                         <tbody>
-                          {phieuThuList.map((pt, idx) => (
-                            <tr key={pt.id || idx} className={!pt.da_thu ? styles.unpaidRow : ''}>
-                              <td><strong>{pt.ten_khoan_thu || `Khoản thu #${pt.id_khoan_thu}`}</strong></td>
+                          {phieuThuList.filter(p => !p.da_thu).map((pt, idx) => (
+                            <tr key={pt.id || idx} className={pt.trang_thai_text === 'cho_xac_nhan' ? styles.pendingRow : styles.unpaidRow}>
+                              <td><strong>{pt.ma_thanh_toan || '-'}</strong></td>
+                              <td>{pt.ten_khoan_thu || `Khoản thu #${pt.id_khoan_thu}`}</td>
                               <td>{pt.ky_thanh_toan}</td>
                               <td className={styles.amount}>{formatCurrency(pt.so_tien_phai_thu)}</td>
-                              <td>{getPaymentStatus(pt.da_thu)}</td>
+                              <td>{getPaymentStatus(pt.da_thu, pt.trang_thai_text)}</td>
+                              <td>
+                                {pt.trang_thai_text === 'cho_xac_nhan' ? (
+                                  <span style={{ color: '#f39c12', fontSize: '12px' }}>⏳ Đang chờ</span>
+                                ) : (
+                                  <button 
+                                    className={styles.qrBtn}
+                                    onClick={() => openQRPayment(pt)}
+                                    title="Quét QR để thanh toán"
+                                  >
+                                    📱 QR
+                                  </button>
+                                )}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <p className={styles.noData}>🎉 Không có hóa đơn nào chưa thanh toán!</p>
+                  )}
+                </div>
+
+                {/* Lịch sử thanh toán */}
+                <div className={styles.infoCard}>
+                  <h3>✅ Lịch Sử Thanh Toán</h3>
+                  {phieuThuList.filter(p => p.da_thu).length > 0 ? (
+                    <div className={styles.tableWrapper}>
+                      <table className={styles.dataTable}>
+                        <thead>
+                          <tr>
+                            <th>Mã Thanh Toán</th>
+                            <th>Khoản Thu</th>
+                            <th>Kỳ Thanh Toán</th>
+                            <th>Số Tiền</th>
+                            <th>Ngày Thanh Toán</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {phieuThuList.filter(p => p.da_thu).map((pt, idx) => (
+                            <tr key={pt.id || idx}>
+                              <td><strong>{pt.ma_thanh_toan || '-'}</strong></td>
+                              <td>{pt.ten_khoan_thu || `Khoản thu #${pt.id_khoan_thu}`}</td>
+                              <td>{pt.ky_thanh_toan}</td>
+                              <td className={styles.amount}>{formatCurrency(pt.so_tien_phai_thu)}</td>
                               <td>{pt.ngay_thu ? formatDate(pt.ngay_thu) : '-'}</td>
                             </tr>
                           ))}
@@ -585,19 +687,32 @@ export function UserDashboard() {
                       </table>
                     </div>
                   ) : (
-                    <p className={styles.noData}>Không có hóa đơn nào</p>
+                    <p className={styles.noData}>Chưa có lịch sử thanh toán</p>
                   )}
                 </div>
 
                 {/* Hướng dẫn thanh toán */}
                 <div className={styles.paymentGuide}>
                   <h3>📌 Hướng Dẫn Thanh Toán</h3>
-                  <ul>
-                    <li>Thanh toán trực tiếp tại văn phòng Ban Quản Lý (Tầng 1)</li>
-                    <li>Chuyển khoản qua số tài khoản: <strong>0123456789 - Ngân hàng ABC</strong></li>
-                    <li>Nội dung: <strong>Mã căn hộ + Tên chủ hộ + Tên khoản thu</strong></li>
-                    <li>Liên hệ hotline: <strong>1900 5555</strong> nếu cần hỗ trợ</li>
-                  </ul>
+                  <div className={styles.paymentGuideContent}>
+                    <ul>
+                      <li>Thanh toán trực tiếp tại văn phòng Ban Quản Lý (Tầng 1)</li>
+                      <li>Quét mã QR bên cạnh để thanh toán nhanh</li>
+                      <li>Liên hệ hotline: <strong>1900 5555</strong> nếu cần hỗ trợ</li>
+                    </ul>
+                    <div className={styles.paymentQRGuide}>
+                      <img 
+                        src="https://img.vietqr.io/image/TCB-19071649369017-compact2.png?accountName=NGUYEN%20THI%20HIEN%20DIEU" 
+                        alt="QR Thanh toán"
+                        className={styles.guideQRImage}
+                      />
+                      <div className={styles.qrBankInfo}>
+                        <p><strong>Techcombank</strong></p>
+                        <p>STK: 19071649369017</p>
+                        <p>NGUYEN THI HIEN DIEU</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
@@ -1027,6 +1142,76 @@ export function UserDashboard() {
               </button>
               <button className={styles.cancelBtn} onClick={handleCloseForm}>
                 Hủy
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: QR Thanh Toán */}
+      {showQRModal && qrPaymentData && (
+        <div className={styles.modal}>
+          <div className={styles.modalContent} style={{ maxWidth: '450px' }}>
+            <h3>📱 Quét Mã QR Để Thanh Toán</h3>
+            
+            <div className={styles.qrPaymentInfo}>
+              <div className={styles.qrCodeContainer}>
+                <img 
+                  src={qrPaymentData.qrUrl} 
+                  alt="QR Code thanh toán"
+                  className={styles.qrCodeImage}
+                />
+              </div>
+              
+              <div className={styles.paymentDetails}>
+                <div className={styles.paymentRow}>
+                  <span className={styles.paymentLabel}>Khoản thu:</span>
+                  <span className={styles.paymentValue}>{qrPaymentData.phieuThu.ten_khoan_thu}</span>
+                </div>
+                <div className={styles.paymentRow}>
+                  <span className={styles.paymentLabel}>Kỳ thanh toán:</span>
+                  <span className={styles.paymentValue}>{qrPaymentData.phieuThu.ky_thanh_toan}</span>
+                </div>
+                <div className={styles.paymentRow}>
+                  <span className={styles.paymentLabel}>Số tiền:</span>
+                  <span className={styles.paymentValue} style={{ color: '#e74c3c', fontWeight: 'bold', fontSize: '1.2em' }}>
+                    {formatCurrency(qrPaymentData.bankInfo.amount)}
+                  </span>
+                </div>
+                <hr style={{ margin: '15px 0', borderColor: '#eee' }} />
+                <div className={styles.paymentRow}>
+                  <span className={styles.paymentLabel}>Ngân hàng:</span>
+                  <span className={styles.paymentValue}>{qrPaymentData.bankInfo.bank}</span>
+                </div>
+                <div className={styles.paymentRow}>
+                  <span className={styles.paymentLabel}>Số TK:</span>
+                  <span className={styles.paymentValue}><strong>{qrPaymentData.bankInfo.accountNo}</strong></span>
+                </div>
+                <div className={styles.paymentRow}>
+                  <span className={styles.paymentLabel}>Chủ TK:</span>
+                  <span className={styles.paymentValue}>{qrPaymentData.bankInfo.accountName}</span>
+                </div>
+                <div className={styles.paymentRow}>
+                  <span className={styles.paymentLabel}>Nội dung CK:</span>
+                  <span className={styles.paymentValue}><strong>{qrPaymentData.bankInfo.description}</strong></span>
+                </div>
+              </div>
+              
+              <p style={{ textAlign: 'center', color: '#7f8c8d', fontSize: '0.85em', marginTop: '15px' }}>
+                💡 Mở app ngân hàng, quét mã QR để thanh toán tự động.<br/>
+                Hoặc chuyển khoản thủ công theo thông tin trên.
+              </p>
+            </div>
+            
+            <div className={styles.modalActions}>
+              <button 
+                className={styles.submitBtn} 
+                onClick={() => handleConfirmPayment(qrPaymentData.phieuThu)}
+              >
+                ✅ Tôi đã thanh toán
+              </button>
+              <button className={styles.cancelBtn} onClick={() => setShowQRModal(false)}>
+                Đóng
               </button>
             </div>
           </div>

@@ -9,6 +9,7 @@ import AccountSettings from '../components/AccountSettings';
 import PhieuThuStats from '../components/PhieuThuStats';
 import PhieuThuSearch from '../components/PhieuThuSearch';
 import UnpaidPhieuThuList from '../components/UnpaidPhieuThuList';
+import PendingPayments from '../components/PendingPayments';
 import styles from './Dashboard.module.css';
 
 export function AdminPanel() {
@@ -243,6 +244,9 @@ export function AdminPanel() {
                   </button>
                   <button className={styles.dropdownItem} onClick={() => handleFeeView('unpaid')}>
                     Danh sách khoản thu chưa hoàn thành
+                  </button>
+                  <button className={styles.dropdownItem} onClick={() => handleFeeView('pending')}>
+                    Xác nhận thanh toán
                   </button>
                 </div>
               )}
@@ -486,6 +490,11 @@ export function AdminPanel() {
                 {activeFeeView === 'unpaid' && (
                   <div className={styles.cardBlock} style={{ order: 0 }}>
                     <UnpaidPhieuThuList />
+                  </div>
+                )}
+                {activeFeeView === 'pending' && (
+                  <div className={styles.cardBlock} style={{ order: 0 }}>
+                    <PendingPayments />
                   </div>
                 )}
               </div>

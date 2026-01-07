@@ -177,7 +177,7 @@ app.get('/api/phieuthu/all', asyncHandler(async (req, res) => {
             p.id,
             p.id_ho_gia_dinh,
             p.id_khoan_thu,
-            kt.ten AS ten_khoan_thu,
+            COALESCE(kt.ten, 'Chưa xác định') AS ten_khoan_thu,
             p.ky_thanh_toan,
             p.so_tien_phai_thu,
             p.so_tien_da_thu,
@@ -187,7 +187,7 @@ app.get('/api/phieuthu/all', asyncHandler(async (req, res) => {
             COALESCE(NULLIF(TRIM(h.ten_chu_ho), ''), 'Chưa cập nhật') AS ten_chu_ho
         FROM PhieuThu p
         JOIN HoGiaDinh h ON h.id = p.id_ho_gia_dinh
-        INNER JOIN KhoanThu kt ON kt.id = p.id_khoan_thu
+        LEFT JOIN KhoanThu kt ON kt.id = p.id_khoan_thu
         ORDER BY p.id DESC
     `);
     res.json({ message: 'Lấy danh sách phiếu thu thành công!', data: rows, count: rows.length });
@@ -227,6 +227,76 @@ app.delete('/api/phieuthu/:id', verifyToken, asyncHandler(async (req, res) => {
     const [result] = await pool.query('DELETE FROM PhieuThu WHERE id = ?', [req.params.id]);
     if (result.affectedRows === 0) return res.status(404).json({ message: 'Phiếu thu không tìm thấy' });
     res.json({ message: 'Xóa phiếu thu thành công!' });
+}));
+
+// ========== PHIẾU THU CHỜ XÁC NHẬN (Admin) ==========
+const { requireRole } = require('./middleware/auth');
+
+// Lấy danh sách phiếu thu chờ xác nhận (trang_thai = 2)
+app.get('/api/phieuthu/pending', verifyToken, requireRole('admin'), asyncHandler(async (req, res) => {
+    const [rows] = await pool.query(`
+        SELECT 
+            p.id,
+            p.id_ho_gia_dinh,
+            p.id_khoan_thu,
+            kt.ten AS ten_khoan_thu,
+            p.ky_thanh_toan,
+            p.so_tien_phai_thu,
+            p.so_tien_da_thu,
+            p.ngay_thu,
+            p.trang_thai,
+            COALESCE(NULLIF(TRIM(h.ma_can_ho), ''), CONCAT('CH-', LPAD(p.id_ho_gia_dinh, 3, '0'))) AS ma_can_ho,
+            COALESCE(NULLIF(TRIM(h.ten_chu_ho), ''), 'Chưa cập nhật') AS ten_chu_ho,
+            h.sdt AS sdt_chu_ho
+        FROM PhieuThu p
+        JOIN HoGiaDinh h ON h.id = p.id_ho_gia_dinh
+        INNER JOIN KhoanThu kt ON kt.id = p.id_khoan_thu
+        WHERE p.trang_thai = 2
+        ORDER BY p.ngay_thu DESC, p.id DESC
+    `);
+    res.json({ message: 'Danh sách phiếu thu chờ xác nhận', data: rows, count: rows.length });
+}));
+
+// Phê duyệt thanh toán (Admin xác nhận đã thanh toán)
+app.put('/api/phieuthu/:id/approve', verifyToken, requireRole('admin'), asyncHandler(async (req, res) => {
+    if (!isValidId(req.params.id)) return res.status(400).json({ message: 'ID không hợp lệ' });
+    
+    // Kiểm tra phiếu thu tồn tại và đang ở trạng thái chờ xác nhận
+    const [phieuThu] = await pool.query('SELECT * FROM PhieuThu WHERE id = ?', [req.params.id]);
+    if (!phieuThu.length) return res.status(404).json({ message: 'Phiếu thu không tìm thấy' });
+    if (phieuThu[0].trang_thai !== 2) {
+        return res.status(400).json({ message: 'Phiếu thu không ở trạng thái chờ xác nhận' });
+    }
+    
+    // Cập nhật: đã thanh toán (trang_thai = 1), ghi nhận tiền đã thu
+    const [result] = await pool.query(
+        'UPDATE PhieuThu SET trang_thai = 1, so_tien_da_thu = so_tien_phai_thu WHERE id = ?',
+        [req.params.id]
+    );
+    
+    res.json({ message: 'Đã xác nhận thanh toán thành công!', data: { id: req.params.id } });
+}));
+
+// Từ chối xác nhận thanh toán (Admin từ chối)
+app.put('/api/phieuthu/:id/reject', verifyToken, requireRole('admin'), asyncHandler(async (req, res) => {
+    if (!isValidId(req.params.id)) return res.status(400).json({ message: 'ID không hợp lệ' });
+    
+    // Kiểm tra phiếu thu tồn tại và đang ở trạng thái chờ xác nhận
+    const [phieuThu] = await pool.query('SELECT * FROM PhieuThu WHERE id = ?', [req.params.id]);
+    if (!phieuThu.length) return res.status(404).json({ message: 'Phiếu thu không tìm thấy' });
+    if (phieuThu[0].trang_thai !== 2) {
+        return res.status(400).json({ message: 'Phiếu thu không ở trạng thái chờ xác nhận' });
+    }
+    
+    const ly_do = req.body.ly_do || 'Không xác nhận được giao dịch';
+    
+    // Đưa về trạng thái chưa thanh toán (trang_thai = 0)
+    const [result] = await pool.query(
+        'UPDATE PhieuThu SET trang_thai = 0, ngay_thu = NULL WHERE id = ?',
+        [req.params.id]
+    );
+    
+    res.json({ message: 'Đã từ chối xác nhận thanh toán', data: { id: req.params.id, ly_do } });
 }));
 
 // ========== KHOẢN THU ROUTES (CRUD) ==========

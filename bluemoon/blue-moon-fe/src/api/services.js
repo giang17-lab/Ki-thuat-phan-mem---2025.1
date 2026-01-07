@@ -37,6 +37,11 @@ export const authService = {
   getMyHousehold: async () => {
     return client.get('/auth/my-household');
   },
+
+  // Xác nhận đã thanh toán
+  confirmPayment: async (phieuThuId) => {
+    return client.post(`/auth/confirm-payment/${phieuThuId}`);
+  },
 };
 
 export const hoGiaDinhService = {
@@ -138,6 +143,21 @@ export const phieuThuService = {
 
   delete: async (id) => {
     return client.delete(`/phieuthu/${id}`);
+  },
+
+  // Admin: Lấy danh sách phiếu thu chờ xác nhận
+  getPending: async () => {
+    return client.get('/phieuthu/pending');
+  },
+
+  // Admin: Phê duyệt thanh toán
+  approve: async (id) => {
+    return client.put(`/phieuthu/${id}/approve`);
+  },
+
+  // Admin: Từ chối xác nhận thanh toán
+  reject: async (id, ly_do) => {
+    return client.put(`/phieuthu/${id}/reject`, { ly_do });
   },
 };
 export const requestsService = {

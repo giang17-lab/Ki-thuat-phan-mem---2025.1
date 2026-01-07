@@ -281,7 +281,16 @@ router.get('/my-household', verifyToken, asyncHandler(async (req, res) => {
             // Lấy phiếu thu
             const [pt] = await pool.query(
                 `SELECT pt.*, kt.ten as ten_khoan_thu, kt.mo_ta as loai_khoan_thu,
-                 (pt.trang_thai = 1) as da_thu
+                 CASE 
+                   WHEN pt.trang_thai = 1 THEN true 
+                   WHEN pt.trang_thai = 2 THEN false
+                   ELSE false 
+                 END as da_thu,
+                 CASE
+                   WHEN pt.trang_thai = 2 THEN 'cho_xac_nhan'
+                   WHEN pt.trang_thai = 1 THEN 'da_thanh_toan'
+                   ELSE 'chua_thanh_toan'
+                 END as trang_thai_text
                 FROM PhieuThu pt
                 LEFT JOIN KhoanThu kt ON pt.id_khoan_thu = kt.id
                 WHERE pt.id_ho_gia_dinh = ?
@@ -306,6 +315,48 @@ router.get('/my-household', verifyToken, asyncHandler(async (req, res) => {
             xeCo,
             phieuThu
         }
+    });
+}));
+
+// ========== CONFIRM PAYMENT - POST /api/auth/confirm-payment/:id ==========
+router.post('/confirm-payment/:id', verifyToken, asyncHandler(async (req, res) => {
+    const userId = req.user?.id;
+    const phieuThuId = req.params.id;
+    
+    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
+
+    // Kiểm tra phiếu thu có thuộc về user này không
+    const [user] = await pool.query(
+        'SELECT ho_gia_dinh_id FROM NguoiDung WHERE id = ?',
+        [userId]
+    );
+
+    if (!user.length || !user[0].ho_gia_dinh_id) {
+        return res.status(400).json({ message: 'Chưa liên kết với hộ gia đình' });
+    }
+
+    const [phieuThu] = await pool.query(
+        'SELECT * FROM PhieuThu WHERE id = ? AND id_ho_gia_dinh = ?',
+        [phieuThuId, user[0].ho_gia_dinh_id]
+    );
+
+    if (!phieuThu.length) {
+        return res.status(404).json({ message: 'Không tìm thấy phiếu thu' });
+    }
+
+    if (phieuThu[0].trang_thai === 1) {
+        return res.status(400).json({ message: 'Phiếu thu này đã được thanh toán' });
+    }
+
+    // Cập nhật trạng thái: chờ xác nhận (trang_thai = 2)
+    await pool.query(
+        'UPDATE PhieuThu SET trang_thai = 2, ngay_thu = CURDATE() WHERE id = ?',
+        [phieuThuId]
+    );
+
+    res.json({
+        message: 'Đã gửi xác nhận thanh toán. Ban quản lý sẽ kiểm tra và cập nhật.',
+        data: { phieuThuId }
     });
 }));
 
