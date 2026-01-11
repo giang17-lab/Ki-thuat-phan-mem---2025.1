@@ -276,3 +276,54 @@ export const userService = {
     return client.get('/auth/my-bills');
   },
 };
+
+export const quyenGopService = {
+  // User: Lấy danh sách chiến dịch đang diễn ra
+  getCampaigns: async () => {
+    return client.get('/quyengop/campaigns');
+  },
+
+  // User: Quyên góp cho chiến dịch
+  donate: async (campaignId, so_tien, ghi_chu) => {
+    return client.post(`/quyengop/campaigns/${campaignId}/donate`, {
+      so_tien,
+      ghi_chu
+    });
+  },
+
+  // User: Lấy lịch sử quyên góp của user
+  getMyDonations: async () => {
+    return client.get('/quyengop/my-donations');
+  },
+
+  // Admin: Lấy danh sách tất cả chiến dịch
+  getAllCampaigns: async () => {
+    return client.get('/quyengop/admin/campaigns');
+  },
+
+  // Admin: Tạo chiến dịch mới
+  createCampaign: async (ten, mo_ta, muc_tieu, ngay_bat_dau, ngay_ket_thuc) => {
+    return client.post('/quyengop/admin/campaigns', {
+      ten,
+      mo_ta,
+      muc_tieu,
+      ngay_bat_dau,
+      ngay_ket_thuc
+    });
+  },
+
+  // Admin: Cập nhật chiến dịch
+  updateCampaign: async (id, data) => {
+    return client.put(`/quyengop/admin/campaigns/${id}`, data);
+  },
+
+  // Admin: Xóa chiến dịch
+  deleteCampaign: async (id) => {
+    return client.delete(`/quyengop/admin/campaigns/${id}`);
+  },
+
+  // Admin: Lấy danh sách người quyên góp
+  getCampaignDonors: async (campaignId) => {
+    return client.get(`/quyengop/admin/campaigns/${campaignId}/donors`);
+  }
+};

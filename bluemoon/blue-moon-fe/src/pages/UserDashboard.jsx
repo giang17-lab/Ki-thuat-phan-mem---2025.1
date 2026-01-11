@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { requestsService, gopyService, authService } from '../api/services';
+import UserCampaigns from '../components/UserCampaigns';
 import styles from './UserDashboard.module.css';
 
 export function UserDashboard() {
@@ -323,7 +324,7 @@ export function UserDashboard() {
       <div className={styles.topBar}>
         <div className={styles.topBarContent}>
           <div className={styles.contactInfo}>
-            <span>📞 Hotline: 1900 5555</span>
+            <span>📞 Hotline: 0372779671</span>
             <span>✉️ support@bluemoon.vn</span>
           </div>
           <div className={styles.userInfo}>
@@ -359,6 +360,12 @@ export function UserDashboard() {
               onClick={() => setActiveTab('fees')}
             >
               💰 Phí & Thanh Toán
+            </button>
+            <button 
+              className={activeTab === 'campaigns' ? styles.navActive : ''} 
+              onClick={() => setActiveTab('campaigns')}
+            >
+              🤝 Quyên Góp
             </button>
             <button 
               className={activeTab === 'requests' ? styles.navActive : ''} 
@@ -698,7 +705,7 @@ export function UserDashboard() {
                     <ul>
                       <li>Thanh toán trực tiếp tại văn phòng Ban Quản Lý (Tầng 1)</li>
                       <li>Quét mã QR bên cạnh để thanh toán nhanh</li>
-                      <li>Liên hệ hotline: <strong>1900 5555</strong> nếu cần hỗ trợ</li>
+                      <li>Liên hệ hotline: <strong>0372779671</strong> nếu cần hỗ trợ</li>
                     </ul>
                     <div className={styles.paymentQRGuide}>
                       <img 
@@ -714,6 +721,13 @@ export function UserDashboard() {
                     </div>
                   </div>
                 </div>
+              </div>
+            )}
+
+            {/* Tab: Chiến Dịch Quyên Góp */}
+            {activeTab === 'campaigns' && (
+              <div className={styles.campaignsTab}>
+                <UserCampaigns />
               </div>
             )}
 

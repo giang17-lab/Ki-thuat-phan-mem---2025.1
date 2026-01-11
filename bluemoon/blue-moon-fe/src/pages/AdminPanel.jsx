@@ -10,6 +10,7 @@ import PhieuThuStats from '../components/PhieuThuStats';
 import PhieuThuSearch from '../components/PhieuThuSearch';
 import UnpaidPhieuThuList from '../components/UnpaidPhieuThuList';
 import PendingPayments from '../components/PendingPayments';
+import CampaignManager from '../components/CampaignManager';
 import styles from './Dashboard.module.css';
 
 export function AdminPanel() {
@@ -186,7 +187,7 @@ export function AdminPanel() {
         <div className={styles.topBarContent}>
           <div className={styles.contactInfo}>
             <span>📧 admin@bluemoon.vn</span>
-            <span>📞 0123.456.789</span>
+            <span>📞 0372779671</span>
           </div>
           <div className={styles.userInfo}>
             <span>Xin chào, {user?.username}!</span>
@@ -247,6 +248,9 @@ export function AdminPanel() {
                   </button>
                   <button className={styles.dropdownItem} onClick={() => handleFeeView('pending')}>
                     Xác nhận thanh toán
+                  </button>
+                  <button className={styles.dropdownItem} onClick={() => handleFeeView('campaigns')}>
+                    Chiến dịch quyên góp
                   </button>
                 </div>
               )}
@@ -495,6 +499,11 @@ export function AdminPanel() {
                 {activeFeeView === 'pending' && (
                   <div className={styles.cardBlock} style={{ order: 0 }}>
                     <PendingPayments />
+                  </div>
+                )}
+                {activeFeeView === 'campaigns' && (
+                  <div className={styles.cardBlock} style={{ order: 0 }}>
+                    <CampaignManager />
                   </div>
                 )}
               </div>

@@ -29,7 +29,7 @@ async function seedGopY() {
         noi_dung: 'Dịch vụ vệ sinh hành lang và cầu thang bộ gần đây có phần chưa sạch sẽ. Mong Ban quản lý kiểm tra và nhắc nhở đội vệ sinh làm việc kỹ hơn.\n\nCảm ơn!',
         loai_gop_y: 'gop_y',
         trang_thai: 'da_phan_hoi',
-        phan_hoi: 'Cảm ơn góp ý của bạn! Chúng tôi đã nhắc nhở đội vệ sinh và sẽ tăng cường kiểm tra chất lượng. Mọi phản ánh tiếp theo xin liên hệ hotline 0123.456.789.'
+        phan_hoi: 'Cảm ơn góp ý của bạn! Chúng tôi đã nhắc nhở đội vệ sinh và sẽ tăng cường kiểm tra chất lượng. Mọi phản ánh tiếp theo xin liên hệ hotline 0372779671.'
       },
       {
         tieu_de: 'Yêu cầu sửa chữa thang máy số 2',

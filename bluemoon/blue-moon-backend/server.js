@@ -9,6 +9,7 @@ const port = process.env.PORT || 3000;
 const authRoutes = require('./routes/auth');
 const requestRoutes = require('./routes/requests');
 const gopyRoutes = require('./routes/gopy');
+const quyenGopRoutes = require('./routes/quyengop');
 const { verifyToken } = require('./middleware/auth');
 
 // ========== MIDDLEWARE ==========
@@ -35,6 +36,7 @@ const asyncHandler = (fn) => (req, res, next) => Promise.resolve(fn(req, res, ne
 app.use('/api/auth', authRoutes);
 app.use('/api/requests', requestRoutes);
 app.use('/api/gopy', gopyRoutes);
+app.use('/api/quyengop', quyenGopRoutes);
 
 // ========== HỘ GIA ĐÌNH ROUTES (6 APIs) ==========
 app.get('/api/hogiadinh', asyncHandler(async (req, res) => {
