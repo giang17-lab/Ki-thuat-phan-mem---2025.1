@@ -117,7 +117,7 @@ router.get('/campaigns', asyncHandler(async (req, res) => {
         percent_done: c.muc_tieu > 0 ? Math.round((c.so_tien_dat_duoc / c.muc_tieu) * 100) : 0
     }));
 
-    res.json({ message: 'Lấy danh sách chiến dịch thành công', data: campaignsWithPercent, count: campaigns.length });
+    res.json({ message: 'Lấy danh sách chiến dịch đang diễn ra thành công', data: campaignsWithPercent, count: campaigns.length });
 }));
 
 // User quyên góp cho chiến dịch
@@ -158,12 +158,12 @@ router.post('/campaigns/:id/donate', verifyToken, asyncHandler(async (req, res) 
 
 // Lấy lịch sử quyên góp của user
 router.get('/my-donations', verifyToken, asyncHandler(async (req, res) => {
-    const [userHo] = await pool.query(
-        'SELECT id FROM HoGiaDinh WHERE id_user = ?',
+    const [user] = await pool.query(
+        'SELECT ho_gia_dinh_id FROM NguoiDung WHERE id = ?',
         [req.user.id]
     );
 
-    if (!userHo.length) return res.status(404).json({ message: 'Không tìm thấy hộ gia đình của bạn' });
+    if (!user.length || !user[0].ho_gia_dinh_id) return res.status(404).json({ message: 'Không tìm thấy hộ gia đình của bạn' });
 
     const [donations] = await pool.query(`
         SELECT 
@@ -178,7 +178,7 @@ router.get('/my-donations', verifyToken, asyncHandler(async (req, res) => {
         JOIN QuyenGopCampaign c ON c.id = qt.id_campaign
         WHERE qt.id_ho_gia_dinh = ?
         ORDER BY qt.ngay_quyen_gop DESC
-    `, [userHo[0].id]);
+    `, [user[0].ho_gia_dinh_id]);
 
     const totalDonated = donations.reduce((sum, d) => sum + (parseFloat(d.so_tien) || 0), 0);
 

@@ -104,12 +104,19 @@
 
 .resultsTable {
   overflow-x: auto;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 15px;
 }
 
 .resultsTable table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 10px;
+  background-color: white;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .resultsTable thead {

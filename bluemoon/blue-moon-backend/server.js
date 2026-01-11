@@ -106,17 +106,19 @@ app.delete('/api/hogiadinh/:id', verifyToken, asyncHandler(async (req, res) => {
 // ========== NHÂN KHẨU ROUTES (4 APIs) ==========
 app.get('/api/nhankhau/ho/:id_ho', asyncHandler(async (req, res) => {
     if (!isValidId(req.params.id_ho)) return res.status(400).json({ message: 'ID không hợp lệ' });
-    const [rows] = await pool.query('SELECT id, ho_ten, ngay_sinh, cccd, quan_he FROM NhanKhau WHERE id_ho_gia_dinh = ? ORDER BY id', [req.params.id_ho]);
+    const [rows] = await pool.query('SELECT id, ho_ten, ngay_sinh, cccd, quan_he, gioi_tinh, sdt FROM NhanKhau WHERE id_ho_gia_dinh = ? ORDER BY id', [req.params.id_ho]);
     res.json({ data: rows, count: rows.length });
 }));
 
 app.post('/api/nhankhau', verifyToken, asyncHandler(async (req, res) => {
-    const { id_ho_gia_dinh, ho_ten } = req.body;
+    const { id_ho_gia_dinh, ho_ten, ngay_sinh, quan_he, cccd, sdt, gioi_tinh } = req.body;
     if (!isValidId(id_ho_gia_dinh) || !isValidString(ho_ten)) {
         return res.status(400).json({ message: 'id_ho_gia_dinh và ho_ten là bắt buộc' });
     }
-    const [result] = await pool.query('INSERT INTO NhanKhau (id_ho_gia_dinh, ho_ten, loai_cu_tru) VALUES (?, ?, 1)', 
-        [id_ho_gia_dinh, sanitizeInput(ho_ten)]);
+    const [result] = await pool.query(
+        'INSERT INTO NhanKhau (id_ho_gia_dinh, ho_ten, ngay_sinh, quan_he, cccd, sdt, gioi_tinh, loai_cu_tru) VALUES (?, ?, ?, ?, ?, ?, ?, 1)',
+        [id_ho_gia_dinh, sanitizeInput(ho_ten), ngay_sinh || null, sanitizeInput(quan_he) || null, sanitizeInput(cccd) || null, sanitizeInput(sdt) || null, sanitizeInput(gioi_tinh) || null]
+    );
     res.status(201).json({ message: 'Tạo nhân khẩu thành công!', data: { id: result.insertId } });
 }));
 

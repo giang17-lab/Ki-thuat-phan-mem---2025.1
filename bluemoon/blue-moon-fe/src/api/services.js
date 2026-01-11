@@ -82,12 +82,15 @@ export const nhanKhauService = {
     return client.get(`/nhankhau/ho/${id_ho}`);
   },
 
-  create: async (id_ho_gia_dinh, ho_ten, ngay_sinh, quan_he) => {
+  create: async (id_ho_gia_dinh, ho_ten, ngay_sinh, quan_he, cccd, sdt, gioi_tinh) => {
     return client.post('/nhankhau', {
       id_ho_gia_dinh,
       ho_ten,
       ngay_sinh,
       quan_he,
+      cccd,
+      sdt,
+      gioi_tinh,
     });
   },
 

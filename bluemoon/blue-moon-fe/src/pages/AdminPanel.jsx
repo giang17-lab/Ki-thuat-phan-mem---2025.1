@@ -11,6 +11,8 @@ import PhieuThuSearch from '../components/PhieuThuSearch';
 import UnpaidPhieuThuList from '../components/UnpaidPhieuThuList';
 import PendingPayments from '../components/PendingPayments';
 import CampaignManager from '../components/CampaignManager';
+import ResidentsListManager from '../components/ResidentsListManager';
+import VehiclesListManager from '../components/VehiclesListManager';
 import styles from './Dashboard.module.css';
 
 export function AdminPanel() {
@@ -21,7 +23,9 @@ export function AdminPanel() {
   const [editingId, setEditingId] = useState(null);
   const [activeTab, setActiveTab] = useState('home');
   const [activeFeeView, setActiveFeeView] = useState('stats');
+  const [activeResidentView, setActiveResidentView] = useState('households');
   const [showFeeMenu, setShowFeeMenu] = useState(false);
+  const [showResidentMenu, setShowResidentMenu] = useState(false);
   const [pendingRequests, setPendingRequests] = useState({ vehicles: [], residents: [] });
   const [rejectReason, setRejectReason] = useState('');
   const [rejectingRequestId, setRejectingRequestId] = useState(null);
@@ -31,6 +35,12 @@ export function AdminPanel() {
   const [respondingFeedbackId, setRespondingFeedbackId] = useState(null);
   const [feedbackResponse, setFeedbackResponse] = useState('');
   const { user, logout } = useAuth();
+
+  const handleResidentView = (view) => {
+    setActiveTab('residents');
+    setActiveResidentView(view);
+    setShowResidentMenu(false);
+  };
 
   const loadData = async () => {
     setLoading(true);
@@ -212,12 +222,31 @@ export function AdminPanel() {
             >
               Trang Chủ
             </button>
-            <button 
-              className={activeTab === 'residents' ? styles.navActive : ''}
-              onClick={() => setActiveTab('residents')}
+            <div 
+              className={styles.navDropdown}
+              onMouseEnter={() => setShowResidentMenu(true)}
+              onMouseLeave={() => setShowResidentMenu(false)}
             >
-              Quản Lý Cư Dân
-            </button>
+              <button
+                className={activeTab === 'residents' ? styles.navActive : ''}
+                onClick={(e) => e.preventDefault()}
+              >
+                Quản Lý Cư Dân
+              </button>
+              {showResidentMenu && (
+                <div className={styles.dropdownMenu}>
+                  <button className={styles.dropdownItem} onClick={() => handleResidentView('households')}>
+                    Quản lý hộ gia đình
+                  </button>
+                  <button className={styles.dropdownItem} onClick={() => handleResidentView('all-residents')}>
+                    Tra cứu cư dân
+                  </button>
+                  <button className={styles.dropdownItem} onClick={() => handleResidentView('vehicles')}>
+                    Quản lý xe cộ
+                  </button>
+                </div>
+              )}
+            </div>
             <button 
               className={activeTab === 'requests' ? styles.navActive : ''}
               onClick={() => setActiveTab('requests')}
@@ -321,32 +350,44 @@ export function AdminPanel() {
 
             {activeTab === 'residents' && (
               <>
-                <div className={styles.actions}>
-                  <button
-                    onClick={() => setShowForm(true)}
-                    className={styles.addBtn}
-                    disabled={loading}
-                  >
-                    + Thêm Hộ Gia Đình
-                  </button>
-                </div>
+                {activeResidentView === 'households' && (
+                  <>
+                    <div className={styles.actions}>
+                      <button
+                        onClick={() => setShowForm(true)}
+                        className={styles.addBtn}
+                        disabled={loading}
+                      >
+                        + Thêm Hộ Gia Đình
+                      </button>
+                    </div>
 
-                <Modal open={showForm} onClose={handleCloseForm} title={editingId ? 'Chỉnh Sửa Hộ Gia Đình' : 'Thêm Hộ Gia Đình'}>
-                  <HoGiaDinhForm
-                    editingId={editingId}
-                    onSuccess={handleAddSuccess}
-                    onCancel={handleCloseForm}
-                  />
-                </Modal>
+                    <Modal open={showForm} onClose={handleCloseForm} title={editingId ? 'Chỉnh Sửa Hộ Gia Đình' : 'Thêm Hộ Gia Đình'}>
+                      <HoGiaDinhForm
+                        editingId={editingId}
+                        onSuccess={handleAddSuccess}
+                        onCancel={handleCloseForm}
+                      />
+                    </Modal>
 
-                {loading && !showForm ? (
-                  <div className={styles.loading}>Đang tải dữ liệu...</div>
-                ) : (
-                  <HoGiaDinhList
-                    hoGiaDinh={hoGiaDinh}
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
-                  />
+                    {loading && !showForm ? (
+                      <div className={styles.loading}>Đang tải dữ liệu...</div>
+                    ) : (
+                      <HoGiaDinhList
+                        hoGiaDinh={hoGiaDinh}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                      />
+                    )}
+                  </>
+                )}
+
+                {activeResidentView === 'all-residents' && (
+                  <ResidentsListManager />
+                )}
+
+                {activeResidentView === 'vehicles' && (
+                  <VehiclesListManager />
                 )}
               </>
             )}

@@ -5,7 +5,7 @@ const mysql = require('mysql2/promise');
     const conn = await mysql.createConnection({
       host: 'localhost',
       user: 'root',
-      password: '',
+      password: '123456',
       database: 'blue_moon_db'
     });
 

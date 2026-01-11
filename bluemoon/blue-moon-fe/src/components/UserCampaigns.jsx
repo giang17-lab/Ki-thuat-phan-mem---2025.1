@@ -23,7 +23,8 @@ export default function UserCampaigns() {
     setLoading(true);
     try {
       const res = await quyenGopService.getCampaigns();
-      setCampaigns(res.data?.data || []);
+      console.log('Campaigns response:', res);
+      setCampaigns(res.data || []);
     } catch (err) {
       setError(err.response?.data?.message || 'Không thể tải chiến dịch');
     } finally {
@@ -34,7 +35,8 @@ export default function UserCampaigns() {
   const fetchMyDonations = async () => {
     try {
       const res = await quyenGopService.getMyDonations();
-      setMyDonations(res.data?.data || []);
+      console.log('My donations response:', res);
+      setMyDonations(res.data || []);
     } catch (err) {
       console.error('Lỗi tải lịch sử quyên góp:', err);
     }

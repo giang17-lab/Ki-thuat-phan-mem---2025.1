@@ -10,7 +10,7 @@
 .form h2 {
   margin-top: 0;
   margin-bottom: 25px;
-  color: #333;
+  color: #000;
   font-size: 22px;
 }
 
@@ -30,7 +30,7 @@
 .formGroup label {
   display: block;
   margin-bottom: 8px;
-  color: #555;
+  color: #000;
   font-weight: 500;
   font-size: 14px;
 }
@@ -85,13 +85,13 @@
 }
 
 .submitBtn:disabled {
-  opacity: 0.7;
+  opacity: 1;
   cursor: not-allowed;
 }
 
 .cancelBtn {
   background-color: #eee;
-  color: #666;
+  color: #000;
   border: 1px solid #ddd;
 }
 
@@ -100,7 +100,7 @@
 }
 
 .cancelBtn:disabled {
-  opacity: 0.7;
+  opacity: 1;
   cursor: not-allowed;
 }
 
@@ -116,19 +116,19 @@
   border-radius: 6px;
   border: 1px solid #e0e0e0;
   background: #f7f7f9;
-  color: #555;
+  color: #000;
   cursor: pointer;
 }
 
 .stepTab:disabled {
-  opacity: 0.6;
+  opacity: 1;
   cursor: not-allowed;
 }
 
 .activeStep {
   border-color: #667eea;
-  color: #333;
-  background: #eef1ff;
+  color: #fff;
+  background: #667eea;
 }
 
 .gridTwo {
@@ -158,12 +158,17 @@
   margin-bottom: 10px;
 }
 
+.membersHeader span {
+  color: #000;
+}
+
 .addMemberBtn {
   padding: 8px 10px;
   border: 1px solid #ddd;
   background: #f7f7f9;
   border-radius: 4px;
   cursor: pointer;
+  color: #000;
 }
 
 .memberRow {
@@ -184,5 +189,130 @@
 }
 
 .empty {
-  color: #777;
+  color: #000;
 }
+
+/* Members Table */
+.membersTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+.membersTable th {
+  background-color: #667eea;
+  color: white;
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+.membersTable td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  color: #000;
+}
+
+.membersTable tbody tr:hover {
+  background-color: #f5f5f5;
+}
+
+.editBtn {
+  padding: 6px 10px;
+  background-color: #667eea;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  margin-right: 5px;
+  font-size: 12px;
+}
+
+.editBtn:hover {
+  background-color: #764ba2;
+}
+
+/* Modal */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999 !important;
+}
+
+.modal {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  border-bottom: 1px solid #ddd;
+  background-color: #f7f7f9;
+}
+
+.modalHeader h3 {
+  margin: 0;
+  color: #000;
+  font-size: 18px;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #000;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.closeBtn:hover {
+  color: #000;
+}
+
+.modalBody {
+  padding: 20px;
+}
+
+.modalBody .formGroup {
+  margin-bottom: 15px;
+}
+
+.modalFooter {
+  display: flex;
+  gap: 10px;
+  padding: 20px;
+  border-top: 1px solid #ddd;
+  background-color: #f7f7f9;
+}
+
+.modalFooter button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+}
+

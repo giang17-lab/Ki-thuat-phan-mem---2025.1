@@ -15,6 +15,9 @@ client.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
+    console.log('[Axios] Token added to request:', token.substring(0, 30) + '...');
+  } else {
+    console.warn('[Axios] No token in localStorage');
   }
   return config;
 });
