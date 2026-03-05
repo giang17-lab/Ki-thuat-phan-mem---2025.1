@@ -23,8 +23,7 @@ export default function UserCampaigns() {
     setLoading(true);
     try {
       const res = await quyenGopService.getCampaigns();
-      console.log('Campaigns response:', res);
-      setCampaigns(res.data || []);
+      setCampaigns(res.data?.data || []);
     } catch (err) {
       setError(err.response?.data?.message || 'Không thể tải chiến dịch');
     } finally {

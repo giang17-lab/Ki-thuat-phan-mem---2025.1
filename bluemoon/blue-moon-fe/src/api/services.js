@@ -1,3 +1,12 @@
+// Lấy danh sách khoản thu
+export const khoanThuService = {
+  getAll: async () => {
+    return client.get('/khoanthu');
+  },
+  create: async (ten, tien_co_dinh = 0, mo_ta = null) => {
+    return client.post('/khoanthu', { ten, tien_co_dinh, mo_ta });
+  },
+};
 import client from './client';
 
 export const authService = {
